@@ -1,0 +1,19 @@
+   Compiling game_controller_evolver v0.1.0 (/mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver)
+warning: field `word_freqs_unmerged` is never read
+  --> src/load_pronunciations.rs:14:9
+   |
+ 9 | pub struct PronunciationData {
+   |            ----------------- field in this struct
+...
+14 |     pub word_freqs_unmerged: PronunciationMap,
+   |         ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `PronunciationData` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `game_controller_evolver` (bin "game_controller_evolver") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 7.41s
+
+real	110m2.050s
+user	4956m52.868s
+sys	2m17.412s

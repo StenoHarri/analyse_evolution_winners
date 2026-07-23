@@ -1,0 +1,26 @@
+warning: field `word_freqs_unmerged` is never read
+  --> src/load_pronunciations.rs:14:9
+   |
+ 9 | pub struct PronunciationData {
+   |            ----------------- field in this struct
+...
+14 |     pub word_freqs_unmerged: PronunciationMap,
+   |         ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `PronunciationData` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+error: linking with `cc` failed: exit status: 1
+  |
+  = note:  "cc" "-m64" "/mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver/target/release/deps/rustceGXjia/symbols.o" "<17 object files omitted>" "-Wl,--as-needed" "-Wl,-Bstatic" "/mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver/target/release/deps/{libserde_json-2641b187654605bd,libmemchr-f2e2c24cddecdcdf,libitoa-a082cc022f711fd0,libzmij-9f70c96db9cb66ea,librayon-c05919b0a474f3e7,librayon_core-5a375d021037a2b6,libcrossbeam_deque-46c4cb86b0f94fcd,libcrossbeam_epoch-095a44de847a57a3,libcrossbeam_utils-db0e56bb60b4920d,libeither-0bf7be775775bbc4,librand-6fec912dfe80ea5b,libgetrandom-429eb59425917c41,liblibc-d1cd2faed5843099,libchacha20-ba345740884ce23d,libcpufeatures-e45999220eea2946,libcfg_if-d93cbb7a0fc64597,librand_core-d0ec4827259ad653,libserde-a1bd4bb82e6e9f71,libserde_core-20d4737fbac0ac81}.rlib" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib/{libstd-*,libpanic_unwind-*,libobject-*,libmemchr-*,libaddr2line-*,libgimli-*,libcfg_if-*,librustc_demangle-*,libstd_detect-*,libhashbrown-*,librustc_std_workspace_alloc-*,libminiz_oxide-*,libadler2-*,libunwind-*,liblibc-*,librustc_std_workspace_core-*,liballoc-*,libcore-*,libcompiler_builtins-*}.rlib" "-Wl,-Bdynamic" "-lc" "-lm" "-lrt" "-lpthread" "-lgcc_s" "-lutil" "-lrt" "-lpthread" "-lm" "-ldl" "-lc" "-L" "/mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver/target/release/deps/rustceGXjia/raw-dylibs" "-B<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/bin/gcc-ld" "-fuse-ld=lld" "-Wl,--eh-frame-hdr" "-Wl,-z,noexecstack" "-L" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib" "-o" "/mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver/target/release/deps/game_controller_evolver-8040b4bf76940dd3" "-Wl,--gc-sections" "-pie" "-Wl,-z,relro,-z,now" "-Wl,-O1" "-Wl,--strip-debug" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: rust-lld: error: cannot open /mnt/nfs2/inf/hw548/controller_steno_dis/steno-layout-evolver-for-controller/game_controller_evolver/target/release/deps/game_controller_evolver-8040b4bf76940dd3.cfobe074wkti9s9udx3y0pkp9.rcgu.o: No such file or directory
+          collect2: error: ld returned 1 exit status
+          
+
+warning: `game_controller_evolver` (bin "game_controller_evolver") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 0.51s
+
+real	110m1.698s
+user	3656m44.107s
+sys	1m43.634s

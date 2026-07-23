@@ -1,0 +1,12 @@
+warning: failed to save last-use data
+This may prevent cargo from accurately tracking what is being used in its global cache. This information is used for automatically removing unused data in the cache.
+
+database is locked
+
+Caused by:
+  Error code 5: database is locked
+    Finished `release` profile [optimized] target(s) in 1.97s
+
+real	110m3.641s
+user	2130m57.015s
+sys	0m53.702s
