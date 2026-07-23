@@ -4,7 +4,7 @@ import json
 import matplotlib.pyplot as plt
 
 # Directory containing the results
-directory = Path("21_07_2026")
+directory = Path("15_07_2026")
 
 files = sorted(directory.glob("population_winners_*.jsonl"))
 
