@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Directory containing the results
-directory = Path("15_07_2026")
+directory = Path("26_07_2026")
 
 files = sorted(directory.glob("population_winners_*.jsonl"))
 
@@ -28,7 +28,10 @@ for f in files:
         "file": f.name,
         "coverage": last["coverage"],
         "collisions": last["collisions"],
-        "fitness": last.get("fitness"),
+        "fitness": last.get(
+            "fitness",
+            last["coverage"] - 10.0 * last["collisions"],
+        ),
         "generation": last.get("generation"),
     })
 
@@ -64,7 +67,7 @@ for r in sorted(pareto, key=lambda x: (-x["coverage"], x["collisions"])):
         f" fitness={r['fitness']:.3f}"
     )
 
-# Best-fit line and residuals
+# Linear regression
 
 x = np.array([r["coverage"] for r in results])
 y = np.array([r["collisions"] for r in results])
@@ -104,7 +107,7 @@ plt.scatter(
     label="All runs",
 )
 
-# Pareto front
+# Pareto points
 plt.scatter(
     [r["coverage"] for r in pareto],
     [r["collisions"] for r in pareto],
@@ -113,8 +116,8 @@ plt.scatter(
     label="Pareto-optimal",
 )
 
-# Best-fit line
-xfit = np.linspace(x.min(), x.max(), 200)
+# Best-fit regression line
+xfit = np.linspace(x.min(), x.max(), 300)
 yfit = m * xfit + b
 
 plt.plot(
@@ -125,7 +128,33 @@ plt.plot(
     label="Best-fit line",
 )
 
-# Highlight best residual
+# Fitness contour(s)
+
+fitness_values = [r["coverage"] - 10.0 * r["collisions"] for r in results]
+best_fitness = max(fitness_values)
+
+# Draw several iso-fitness lines
+for f in np.linspace(min(fitness_values), max(fitness_values), 6):
+    plt.plot(
+        xfit,
+        (xfit - f) / 10.0,
+        "--",
+        color="purple",
+        alpha=0.2,
+    )
+
+# Highlight the best fitness contour
+plt.plot(
+    xfit,
+    (xfit - best_fitness) / 10.0,
+    "--",
+    color="purple",
+    linewidth=2.5,
+    label=f"Best fitness contour ({best_fitness:.2f})",
+)
+
+# Highlight most better-than-expected run
+
 plt.scatter(
     best["coverage"],
     best["collisions"],
@@ -136,7 +165,7 @@ plt.scatter(
     label="Most better than expected",
 )
 
-# Label every point with its file number
+# Label every point
 for r in results:
     number = r["file"].split("_")[-1].split(".")[0]
 

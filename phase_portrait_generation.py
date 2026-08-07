@@ -4,14 +4,14 @@ import json
 import matplotlib.pyplot as plt
 
 # Directory containing the results
-directory = Path("15_07_2026")
+directory = Path("27_07_2026")
 
 files = sorted(directory.glob("population_winners_*.jsonl"))
 
 results = []
 
 # Number of generations from the end to display
-TAIL_GENERATIONS = 20000
+TAIL_GENERATIONS = 200000
 
 plt.figure(figsize=(10, 7))
 
