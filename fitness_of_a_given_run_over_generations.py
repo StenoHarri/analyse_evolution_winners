@@ -172,11 +172,11 @@ def plot_combined(stats_csv, winners_jsonl):
 
 def main():
 
-    base = Path("27_07_2026")
+    base = Path("one_cap")
 
     plot_combined(
-        base / "population_statistics_202.csv",
-        base / "population_winners_202.jsonl",
+        base / "population_statistics_2.csv",
+        base / "population_winners_2.jsonl",
     )
 
 
