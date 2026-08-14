@@ -4,3 +4,7 @@
 21_07_2026/*
 15_07_2026/*
 pronunciation_data/*
+*.jsonl
+*.csv
+*.err
+*.out
