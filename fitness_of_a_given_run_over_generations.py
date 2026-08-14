@@ -79,21 +79,19 @@ def plot_combined(stats_csv, winners_jsonl):
 
     generations, best, upper, mean, lower, worst = load_statistics(stats_csv)
 
-    # clip fitnesses below 30
-    best = np.maximum(best, 30)
-    upper = np.maximum(upper, 30)
-    mean = np.maximum(mean, 30)
-    lower = np.maximum(lower, 30)
-    worst = np.maximum(worst, 30)
+    # clip fitnesses below 40
+    best = np.maximum(best, 40)
+    upper = np.maximum(upper, 40)
+    mean = np.maximum(mean, 40)
+    lower = np.maximum(lower, 40)
+    worst = np.maximum(worst, 40)
 
     genomes = load_best_genomes(winners_jsonl)
     novelty = compute_gene_novelty_fade_matrix(genomes)
 
-    # ------------------------------------------------------------------
     # Sort by the LAST generation a mutation occurred.
     # Genes that stopped mutating earliest are placed at the top.
     # Left and right halves are sorted independently.
-    # ------------------------------------------------------------------
     last_mutation = np.full(novelty.shape[0], -1)
 
     for pos in range(novelty.shape[0]):
@@ -122,10 +120,7 @@ def plot_combined(stats_csv, winners_jsonl):
         gridspec_kw={"height_ratios": [1, 2]},
     )
 
-    # -------------------------
     # Fitness
-    # -------------------------
-
     ax1.fill_between(
         generations,
         lower,
@@ -145,10 +140,7 @@ def plot_combined(stats_csv, winners_jsonl):
     ax1.grid(alpha=0.3)
     ax1.legend()
 
-    # -------------------------
     # Novelty heatmap
-    # -------------------------
-
     ax2.imshow(
         novelty,
         aspect="auto",

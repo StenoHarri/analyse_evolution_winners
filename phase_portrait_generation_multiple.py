@@ -5,11 +5,10 @@ import matplotlib.pyplot as plt
 
 # Directories containing the results
 directories = [
-    #Path("15_07_2026"),
-    Path("21_07_2026"),
-    Path("22_07_2026"),
-    Path("26_07_2026"),
-    Path("27_07_2026"),
+    Path("uncapped"),
+    Path("one_cap"),
+    Path("point_four_cap"),
+    Path("point_seven_five_cap"),
 ]
 
 results = []
@@ -23,7 +22,6 @@ colors = plt.cm.tab10.colors
 for i, directory in enumerate(directories):
     files = sorted(directory.glob("population_winners_*.jsonl"))
     color = colors[i % len(colors)]
-    date = directory.name
 
     for f in files:
         history = []
@@ -39,8 +37,10 @@ for i, directory in enumerate(directories):
 
         last = history[-1]
 
+        run_number = f.stem.split("_")[-1]
+
         results.append({
-            "date": date,
+            "run_number": run_number,
             "file": f.name,
             "coverage": last["coverage"],
             "collisions": last["collisions"],
@@ -69,23 +69,29 @@ for i, directory in enumerate(directories):
             zorder=3,
         )
 
-        run_number = f.stem.split("_")[-1]
+        # Label only with the number at the end of the filename,
+        # e.g. population_winners_34.jsonl -> "34"
         plt.annotate(
-            f"{date}-{run_number}",
+            run_number,
             (xs[-1], ys[-1]),
             xytext=(4, 4),
             textcoords="offset points",
             fontsize=8,
         )
 
-# Add one legend entry per date
+# Add one legend entry per directory/cap
 for i, directory in enumerate(directories):
-    plt.plot([], [], color=colors[i % len(colors)], label=directory.name)
+    plt.plot(
+        [],
+        [],
+        color=colors[i % len(colors)],
+        label=directory.name,
+    )
 
 plt.xlabel("Coverage (higher is better)")
 plt.ylabel("Collisions (lower is better)")
-plt.title(f"Final {TAIL_GENERATIONS} Generations of Each Run")
+plt.title("Phase Portraits of each run")
 plt.grid(True, alpha=0.3)
-plt.legend(title="Date")
+plt.legend(title="Cap")
 plt.tight_layout()
 plt.show()
