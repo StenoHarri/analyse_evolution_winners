@@ -131,12 +131,13 @@ for r in results:
 
 
 # ---------------------------------------------------------
-# Mean change by condition
+# Calculate mean AND standard deviation by condition
 # ---------------------------------------------------------
 
-print("\nMean change by condition:\n")
+print("\nMean change by condition (± SD):\n")
 
-condition_means = {}
+condition_stats = {}
+
 
 for directory in directories:
 
@@ -150,25 +151,89 @@ for directory in directories:
     if not condition_results:
         continue
 
-    mean_coverage = np.mean([
+    coverage_changes = np.array([
         r["change_coverage"]
         for r in condition_results
     ])
 
-    mean_collisions = np.mean([
+    collision_changes = np.array([
         r["change_collisions"]
         for r in condition_results
     ])
 
-    condition_means[name] = {
-        "coverage": mean_coverage,
-        "collisions": mean_collisions,
+    # Mean
+    mean_coverage = np.mean(coverage_changes)
+    mean_collisions = np.mean(collision_changes)
+
+    # Sample standard deviation
+    #
+    # ddof=1 means this is the sample SD rather than
+    # the population SD.
+    #
+    # If there is only one run, SD is undefined.
+    if len(coverage_changes) > 1:
+        sd_coverage = np.std(
+            coverage_changes,
+            ddof=1,
+        )
+    else:
+        sd_coverage = 0.0
+
+    if len(collision_changes) > 1:
+        sd_collisions = np.std(
+            collision_changes,
+            ddof=1,
+        )
+    else:
+        sd_collisions = 0.0
+
+    condition_stats[name] = {
+        "n": len(condition_results),
+
+        "coverage_mean": mean_coverage,
+        "coverage_sd": sd_coverage,
+
+        "collisions_mean": mean_collisions,
+        "collisions_sd": sd_collisions,
     }
 
     print(
         f"{name:25}"
-        f" Δcoverage={mean_coverage:+.3f}"
+        f" n={len(condition_results):2d}"
+        f" | Δcoverage={mean_coverage:+.3f}"
+        f" ± {sd_coverage:.3f}"
         f" | Δcollisions={mean_collisions:+.3f}"
+        f" ± {sd_collisions:.3f}"
+    )
+
+
+# ---------------------------------------------------------
+# More compact table for copying into report
+# ---------------------------------------------------------
+
+print("\n\nResults table:\n")
+
+print(
+    f"{'Condition':25}"
+    f"{'n':>5}"
+    f"{'Δ Coverage':>18}"
+    f"{'Δ Collisions':>20}"
+)
+
+print("-" * 68)
+
+
+for name in condition_stats:
+
+    stats = condition_stats[name]
+
+    print(
+        f"{name:25}"
+        f"{stats['n']:>5}"
+        f"{stats['coverage_mean']:>8.3f} ± "
+        f"{stats['coverage_sd']:<7.3f}"
+        f"{stats['collisions_mean']:>8.3f} ± "
+        f"{stats['collisions_sd']:<7.3f}"
     )
 
 
@@ -177,6 +242,7 @@ for directory in directories:
 # ---------------------------------------------------------
 
 plt.figure(figsize=(10, 8))
+
 
 for directory in directories:
 
@@ -200,7 +266,10 @@ for directory in directories:
         for r in condition_results
     ]
 
+    # -----------------------------------------------------
     # Individual runs
+    # -----------------------------------------------------
+
     plt.scatter(
         x,
         y,
@@ -210,7 +279,10 @@ for directory in directories:
         label=name,
     )
 
+    # -----------------------------------------------------
     # Mean for condition
+    # -----------------------------------------------------
+
     mean_x = np.mean(x)
     mean_y = np.mean(y)
 
@@ -223,6 +295,33 @@ for directory in directories:
         s=200,
         marker="X",
         zorder=5,
+    )
+
+    # -----------------------------------------------------
+    # Standard deviation error bars
+    # -----------------------------------------------------
+
+    sd_x = (
+        np.std(x, ddof=1)
+        if len(x) > 1
+        else 0
+    )
+
+    sd_y = (
+        np.std(y, ddof=1)
+        if len(y) > 1
+        else 0
+    )
+
+    plt.errorbar(
+        mean_x,
+        mean_y,
+        xerr=sd_x,
+        yerr=sd_y,
+        color=colours[name],
+        linewidth=2,
+        capsize=5,
+        zorder=4,
     )
 
 
@@ -267,27 +366,38 @@ plt.show()
 
 
 # ---------------------------------------------------------
-# Plot: Mean change in coverage
+# Plot: Mean change in coverage ± SD
 # ---------------------------------------------------------
 
-condition_names = list(condition_means.keys())
+condition_names = list(condition_stats.keys())
+
 
 mean_coverage_changes = [
-    condition_means[name]["coverage"]
+    condition_stats[name]["coverage_mean"]
+    for name in condition_names
+]
+
+sd_coverage_changes = [
+    condition_stats[name]["coverage_sd"]
     for name in condition_names
 ]
 
 
 plt.figure(figsize=(10, 6))
 
+
 bars = plt.bar(
     condition_names,
     mean_coverage_changes,
+    yerr=sd_coverage_changes,
+    capsize=6,
     color=[
         colours[name]
         for name in condition_names
     ],
+    alpha=0.8,
 )
+
 
 plt.axhline(
     0,
@@ -295,23 +405,33 @@ plt.axhline(
     linewidth=1,
 )
 
-plt.ylabel("Change in coverage")
-plt.title(
-    "Mean Coverage Change from Common Generation-0 Baseline"
+
+plt.ylabel(
+    "Change in coverage"
 )
 
-for bar, value in zip(
+plt.title(
+    "Mean Coverage Change from Common Generation-0 Baseline\n"
+    "Error bars = ±1 SD"
+)
+
+
+# Add mean values above bars
+
+for bar, value, sd in zip(
     bars,
     mean_coverage_changes,
+    sd_coverage_changes,
 ):
 
     plt.text(
         bar.get_x() + bar.get_width() / 2,
-        value,
-        f"{value:+.3f}",
+        value + sd,
+        f"{value:+.2f}",
         ha="center",
-        va="bottom" if value >= 0 else "top",
+        va="bottom",
     )
+
 
 plt.grid(
     axis="y",
@@ -323,25 +443,35 @@ plt.show()
 
 
 # ---------------------------------------------------------
-# Plot: Mean change in collisions
+# Plot: Mean change in collisions ± SD
 # ---------------------------------------------------------
 
 mean_collision_changes = [
-    condition_means[name]["collisions"]
+    condition_stats[name]["collisions_mean"]
+    for name in condition_names
+]
+
+sd_collision_changes = [
+    condition_stats[name]["collisions_sd"]
     for name in condition_names
 ]
 
 
 plt.figure(figsize=(10, 6))
 
+
 bars = plt.bar(
     condition_names,
     mean_collision_changes,
+    yerr=sd_collision_changes,
+    capsize=6,
     color=[
         colours[name]
         for name in condition_names
     ],
+    alpha=0.8,
 )
+
 
 plt.axhline(
     0,
@@ -349,23 +479,43 @@ plt.axhline(
     linewidth=1,
 )
 
-plt.ylabel("Change in collisions")
-plt.title(
-    "Mean Collision Change from Common Generation-0 Baseline"
+
+plt.ylabel(
+    "Change in collisions"
 )
 
-for bar, value in zip(
+plt.title(
+    "Mean Collision Change from Common Generation-0 Baseline\n"
+    "Error bars = ±1 SD"
+)
+
+
+# Add mean values above/below bars
+
+for bar, value, sd in zip(
     bars,
     mean_collision_changes,
+    sd_collision_changes,
 ):
+
+    if value >= 0:
+
+        y_position = value + sd
+        vertical_alignment = "bottom"
+
+    else:
+
+        y_position = value - sd
+        vertical_alignment = "top"
 
     plt.text(
         bar.get_x() + bar.get_width() / 2,
-        value,
-        f"{value:+.3f}",
+        y_position,
+        f"{value:+.2f}",
         ha="center",
-        va="bottom" if value >= 0 else "top",
+        va=vertical_alignment,
     )
+
 
 plt.grid(
     axis="y",
