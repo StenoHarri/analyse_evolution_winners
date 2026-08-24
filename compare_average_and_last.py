@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# ---------------------------------------------------------
 # Directories containing the results
-# ---------------------------------------------------------
 
 directories = [
     Path("uncapped"),
@@ -25,9 +23,7 @@ colours = {
 }
 
 
-# ---------------------------------------------------------
 # Read generation 0 and final generation from every file
-# ---------------------------------------------------------
 
 results = []
 
@@ -75,9 +71,7 @@ for directory in directories:
         })
 
 
-# ---------------------------------------------------------
 # Calculate ONE common baseline
-# ---------------------------------------------------------
 
 baseline_coverage = np.mean([
     r["initial_coverage"]
@@ -95,9 +89,7 @@ print(f"Coverage   = {baseline_coverage:.3f}")
 print(f"Collisions = {baseline_collisions:.3f}")
 
 
-# ---------------------------------------------------------
 # Calculate change relative to common baseline
-# ---------------------------------------------------------
 
 for r in results:
 
@@ -112,9 +104,7 @@ for r in results:
     )
 
 
-# ---------------------------------------------------------
 # Print individual results
-# ---------------------------------------------------------
 
 print("\nChange from common generation-0 baseline:\n")
 
@@ -130,9 +120,7 @@ for r in results:
     )
 
 
-# ---------------------------------------------------------
 # Calculate mean AND standard deviation by condition
-# ---------------------------------------------------------
 
 print("\nMean change by condition (± SD):\n")
 
@@ -207,9 +195,7 @@ for directory in directories:
     )
 
 
-# ---------------------------------------------------------
 # More compact table for copying into report
-# ---------------------------------------------------------
 
 print("\n\nResults table:\n")
 
@@ -237,9 +223,7 @@ for name in condition_stats:
     )
 
 
-# ---------------------------------------------------------
 # Plot: Coverage change vs collision change
-# ---------------------------------------------------------
 
 plt.figure(figsize=(10, 8))
 
@@ -365,9 +349,7 @@ plt.tight_layout()
 plt.show()
 
 
-# ---------------------------------------------------------
 # Plot: Mean change in coverage ± SD
-# ---------------------------------------------------------
 
 condition_names = list(condition_stats.keys())
 
@@ -442,9 +424,7 @@ plt.tight_layout()
 plt.show()
 
 
-# ---------------------------------------------------------
 # Plot: Mean change in collisions ± SD
-# ---------------------------------------------------------
 
 mean_collision_changes = [
     condition_stats[name]["collisions_mean"]
